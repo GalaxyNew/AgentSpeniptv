@@ -1,0 +1,316 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+// ── Admin ─────────────────────────────────────────────────────────────────────
+model Admin {
+  id        String   @id @default(cuid())
+  username  String   @unique
+  password  String
+  createdAt DateTime @default(now())
+}
+
+// ── Page Modules (with visibility control) ────────────────────────────────────
+model PageModule {
+  id           String          @id
+  isVisible    Boolean         @default(true)
+  isVisible_fr Boolean         @default(true)
+  isVisible_es Boolean         @default(true)
+  isVisible_en Boolean         @default(true)
+  isVisible_zh Boolean         @default(true)
+  sortOrder    Int             @default(0)
+  sortOrder_fr Int             @default(0)
+  sortOrder_es Int             @default(0)
+  sortOrder_en Int             @default(0)
+  sortOrder_zh Int             @default(0)
+  contents     ModuleContent[]
+  seoConfig    ModuleSeo?
+}
+
+model ModuleContent {
+  id       String     @id @default(cuid())
+  moduleId String
+  locale   String
+  key      String
+  value    String
+  module   PageModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+
+  @@unique([moduleId, locale, key])
+  @@index([moduleId, locale])
+}
+
+// ── Module-level SEO ──────────────────────────────────────────────────────────
+model ModuleSeo {
+  id            String     @id @default(cuid())
+  moduleId      String     @unique
+  headingLevel  String     @default("h2")
+  anchorId      String     @default("")
+  focusKeywords String     @default("")
+  imageAltTexts String     @default("{}")
+  schemaMicro   String?
+  module        PageModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+}
+
+// ── Global Page SEO (per locale) ──────────────────────────────────────────────
+model PageSeo {
+  id              String @id @default(cuid())
+  locale          String @unique
+  metaTitle       String @default("")
+  metaDescription String @default("")
+  metaKeywords    String @default("")
+  canonicalUrl    String @default("")
+  robots          String @default("index, follow")
+  ogTitle         String @default("")
+  ogDescription   String @default("")
+  ogImageUrl      String @default("")
+}
+
+// ── Pricing ───────────────────────────────────────────────────────────────────
+model PricingTier {
+  id        String        @id @default(cuid())
+  sortOrder Int           @default(0)
+  labels    TierLabel[]
+  plans     PricingPlan[]
+}
+
+model TierLabel {
+  id     String      @id @default(cuid())
+  tierId String
+  locale String
+  name   String
+  tier   PricingTier @relation(fields: [tierId], references: [id], onDelete: Cascade)
+
+  @@unique([tierId, locale])
+}
+
+model PricingPlan {
+  id            String      @id @default(cuid())
+  tierId        String
+  sortOrder     Int         @default(0)
+  labels        PlanLabel[]
+  tier          PricingTier @relation(fields: [tierId], references: [id], onDelete: Cascade)
+}
+
+model PlanLabel {
+  id            String      @id @default(cuid())
+  planId        String
+  locale        String
+  duration      String
+  badgeText     String      @default("")
+  features      String      @default("[]")
+  ctaText       String      @default("")
+  subText       String      @default("")
+  waMessage     String      @default("")
+  price          Float       @default(0.0)
+  originalPrice  Float?
+  isRecommended  Boolean     @default(false)
+  currencySymbol String      @default("€")
+  plan           PricingPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+
+  @@unique([planId, locale])
+}
+
+// ── Schema.org Config ─────────────────────────────────────────────────────────
+model SchemaConfig {
+  id            String @id @default("main")
+  orgName       String @default("")
+  orgUrl        String @default("")
+  orgLogoUrl    String @default("")
+  orgPhone      String @default("")
+  orgEmail      String @default("")
+  orgAddress    String @default("")
+  ratingValue   Float  @default(4.8)
+  reviewCount   Int    @default(15000)
+  priceMin      Float  @default(6.99)
+  priceMax      Float  @default(37.99)
+  priceCurrency String @default("EUR")
+}
+
+// ── Personalized Settings (locale-specific site overrides) ───────────────────
+model PersonalizedSettings {
+  id                     String @id @default(cuid())
+  locale                 String @unique
+  activeTheme            String @default("")
+  activeFont             String @default("")
+  brandName              String @default("")
+  brandLogoUrl           String @default("")
+  whatsappNumber         String @default("")
+  whatsappMsg            String @default("")
+  telegramUrl            String @default("")
+  contactEmail           String @default("")
+  supportPopupDelay      Int?
+  showSupportWidget      Boolean @default(true)
+  googleSiteVerification String @default("")
+  bingSiteVerification   String @default("")
+}
+
+// ── Site Settings (brand, domain, theme, contact) ─────────────────────────────
+model SiteSettings {
+  id              String  @id @default("main")
+  // Brand & Domain (all admin-configurable, never hardcoded)
+  brandName       String  @default("IPTV Pro")
+  brandLogoUrl    String  @default("")
+  brandSlogan_fr  String  @default("Streaming illimité, qualité premium")
+  brandSlogan_es  String  @default("Streaming ilimitado, calidad premium")
+  brandSlogan_en  String  @default("Unlimited streaming, premium quality")
+  brandSlogan_zh  String  @default("无限流媒体，卓越品质")
+  siteDomain      String  @default("https://igoriptv2.com")
+  // Theme: "dark-tech" | "elegant-light" | "corporate-blue"
+  activeTheme     String  @default("dark-tech")
+  // Font: e.g. "Outfit", "Inter", "Poppins", "Montserrat", "Playfair Display"
+  activeFont      String  @default("Outfit")
+  // WhatsApp (number + per-locale preset messages)
+  whatsappNumber  String  @default("")
+  whatsappMsg_fr  String  @default("Bonjour, je souhaite m'abonner à IPTV Pro.")
+  whatsappMsg_es  String  @default("Hola, quiero suscribirme a IPTV Pro.")
+  whatsappMsg_en  String  @default("Hello, I want to subscribe to IPTV Pro.")
+  whatsappMsg_zh  String  @default("你好，我想订阅 IPTV Pro。")
+  // Other contact
+  telegramUrl     String  @default("")
+  contactEmail    String  @default("")
+  socialLinks     String  @default("{}")
+  // System
+  defaultLocale   String  @default("fr")
+  maintenanceMode Boolean @default(false)
+  footerCopyright String  @default("© {year} {brand}. All rights reserved.")
+  // Analytics code injection (raw HTML)
+  analyticsHead   String  @default("")
+  analyticsBody   String  @default("")
+  // Robots.txt content
+  robotsTxt       String  @default("User-agent: *\nAllow: /\nDisallow: /admin/")
+  // Support popup & Back to Top settings
+  supportPopupDelay Int   @default(5)
+  showSupportWidget Boolean @default(true)
+  // Search Engine Verification Codes
+  googleSiteVerification String @default("")
+  bingSiteVerification   String @default("")
+}
+
+// ── Hero Background Images ───────────────────────────────────────────────────
+model HeroBgImage {
+  id        String   @id @default(cuid())
+  url       String
+  createdAt DateTime @default(now())
+}
+
+// ── How It Works Images (background / banner) ─────────────────
+model HowItWorksBgImage {
+  id        String   @id @default(cuid())
+  url       String
+  type      String   @default("background") // "background" | "banner"
+  createdAt DateTime @default(now())
+}
+
+// ── Testimonial Images (for screenshot carousel) ─────────────────────────────
+model TestimonialImage {
+  id        String   @id @default(cuid())
+  url       String
+  locale    String   @default("fr")
+  createdAt DateTime @default(now())
+}
+
+// ── Affiliate Links ───────────────────────────────────────────────────────────
+model AffiliateLink {
+  id         String   @id @default(cuid())
+  title      String
+  subtitle   String   @default("")
+  url        String
+  locale     String
+  sortOrder  Int      @default(0)
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+
+  @@index([locale, isActive])
+}
+
+// ── Marquee Images (sports / movies / series) ─────────────────────────────────
+model MarqueeImage {
+  id        String   @id @default(cuid())
+  type      String   // "sports" | "movies" | "series"
+  url       String
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([type, sortOrder])
+}
+
+// ── Module Background Images (Generic) ─────────────────────────────────────────
+model ModuleBgImage {
+  id        String   @id @default(cuid())
+  moduleId  String
+  url       String
+  createdAt DateTime @default(now())
+
+}
+
+// ── Subpages (for custom landing / policy pages) ─────────────────────────────
+model Subpage {
+  id              String   @id @default(cuid())
+  slug            String   // URL slug, e.g. "about-us"
+  locale          String   // e.g. "fr", "es", "en", "zh"
+  title           String   // Frontend displayed page title
+  content         String   // Content text (supports markdown/html)
+  isVisible       Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // SEO specific configurations
+  metaTitle       String   @default("")
+  metaDescription String   @default("")
+  canonicalUrl    String   @default("")
+  robots          String   @default("index, follow")
+
+  @@unique([locale, slug])
+  @@index([locale, isVisible])
+}
+
+// ── Blog Templates ───────────────────────────────────────────────────────────
+model BlogTemplate {
+  id                   String     @id @default(cuid())
+  name                 String
+  headerContent        String     @default("")
+  footerContent        String     @default("")
+  anchorNavEnabled     Boolean    @default(true)
+  recommendationsType  String     @default("latest") // "latest" | "category"
+  recommendationsCount Int        @default(3)
+  keywordLinks         String     @default("") // JSON map of keyword to URL links
+  posts                BlogPost[]
+  createdAt            DateTime   @default(now())
+  updatedAt            DateTime   @updatedAt
+}
+
+// ── Blog Posts ───────────────────────────────────────────────────────────────
+model BlogPost {
+  id              String        @id @default(cuid())
+  slug            String
+  locale          String
+  title           String
+  excerpt         String        @default("")
+  content         String
+  category        String
+  status          String        @default("published") // "draft" | "scheduled" | "published"
+  publishAt       DateTime      @default(now())
+  metaTitle       String        @default("")
+  metaDescription String        @default("")
+  canonicalUrl    String        @default("")
+  robots          String        @default("index, follow")
+  keywords        String        @default("")
+  templateId      String?
+  template        BlogTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@unique([locale, slug])
+  @@index([locale, status, publishAt])
+}
+
+
+
+
+
+
