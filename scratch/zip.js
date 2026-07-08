@@ -4,7 +4,7 @@ const { execSync } = require('child_process');
 
 const rootDir = path.resolve(__dirname, '..');
 const tempDir = path.join(rootDir, 'temp_zip');
-const zipPath = path.join(rootDir, 'deploy.zip');
+const zipPath = path.join(rootDir, 'project.zip');
 
 console.log('Preparing to package project...');
 
@@ -26,7 +26,6 @@ const itemsToCopy = [
   'lib',
   'prisma',
   'public',
-  'scripts',
   'next.config.ts',
   'postcss.config.mjs',
   'eslint.config.mjs',
@@ -34,8 +33,7 @@ const itemsToCopy = [
   'package.json',
   'package-lock.json',
   'proxy.ts',
-  'prisma.config.ts',
-  '.next'
+  'prisma.config.ts'
 ];
 
 try {
@@ -49,20 +47,8 @@ try {
       fs.cpSync(src, dest, { 
         recursive: true,
         filter: (srcPath) => {
-          const relative = path.relative(rootDir, srcPath);
-          const normalized = relative.replace(/\\/g, '/');
-          
-          if (
-            normalized.includes('.next/cache') ||
-            normalized.includes('.next/dev') ||
-            normalized.includes('.next/node_modules') ||
-            normalized.endsWith('dev.db') ||
-            normalized.endsWith('dev.db.bak') ||
-            normalized.includes('public/uploads')
-          ) {
-            return false;
-          }
-          return true;
+          const name = path.basename(srcPath);
+          return name !== 'dev.db' && name !== 'dev.db.bak' && name !== 'uploads';
         }
       });
     } else {
@@ -94,7 +80,7 @@ if (fs.existsSync(sqliteDbBak)) {
 console.log('Compressing files to project.zip...');
 try {
   execSync(`powershell -Command "Compress-Archive -Path '${tempDir}\\*' -DestinationPath '${zipPath}'"`);
-  console.log('🎉 Successfully created deploy.zip!');
+  console.log('🎉 Successfully created project.zip!');
 } catch (err) {
   console.error('Failed to compress using PowerShell:', err.message);
 }
