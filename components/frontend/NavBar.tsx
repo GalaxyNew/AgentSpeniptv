@@ -107,7 +107,9 @@ export default function NavBar({ locale, settings, isEditMode, links: propLinks,
       })
       .map((link: any) => {
         let href = link.href || ''
-        if (href.startsWith('#')) {
+        if (href === '#hero' || href === '/#hero' || href === `/${locale}/#hero` || href === `/${locale}#hero`) {
+          href = homePath
+        } else if (href.startsWith('#')) {
           href = homePath === '/' ? `/${href}` : `${homePath}${href}`
         }
         return {
@@ -128,10 +130,96 @@ export default function NavBar({ locale, settings, isEditMode, links: propLinks,
   const ctaParsed = rawCta ? parseButtonValue(rawCta) : null
   const ctaProps = ctaParsed && ctaParsed.text.trim() ? getButtonLinkProps(ctaParsed, locale, settings) : null
 
+  const handleNavClick = (href: string, target: string | undefined, e: React.MouseEvent) => {
+    if (target === '_blank') return
+
+    if (href && href.includes('#')) {
+      const hashIndex = href.indexOf('#')
+      const pathPart = href.slice(0, hashIndex)
+      const anchorId = href.slice(hashIndex + 1)
+      const currentPath = window.location.pathname
+      const isSamePage = !pathPart || pathPart === currentPath || 
+        (pathPart === '/' && (currentPath === '/' || currentPath === `/${locale}`)) ||
+        (pathPart === `/${locale}` && (currentPath === '/' || currentPath === `/${locale}`))
+
+      if (isSamePage) {
+        const targetEl = anchorId ? document.getElementById(anchorId) : null
+        if (targetEl) {
+          e.preventDefault()
+          setMenuOpen(false)
+          const offset = 80
+          const bodyRect = document.body.getBoundingClientRect().top
+          const elementRect = targetEl.getBoundingClientRect().top
+          const elementPosition = elementRect - bodyRect
+          const offsetPosition = elementPosition - offset
+
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+          })
+
+          // Clean up URL address bar: remove #anchorId completely
+          window.history.replaceState(null, '', currentPath + window.location.search)
+        }
+      } else {
+        // Navigating from a subpage to a homepage section anchor!
+        e.preventDefault()
+        setMenuOpen(false)
+        if (typeof sessionStorage !== 'undefined') {
+          sessionStorage.setItem('pendingScrollAnchor', anchorId)
+        }
+        window.location.href = pathPart || homePath
+      }
+    }
+  }
+
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20)
     window.addEventListener('scroll', onScroll)
-    return () => window.removeEventListener('scroll', onScroll)
+
+    const checkPendingScroll = () => {
+      // 1. Check if there is a pending scroll anchor from sessionStorage
+      if (typeof sessionStorage !== 'undefined') {
+        const pendingAnchor = sessionStorage.getItem('pendingScrollAnchor')
+        if (pendingAnchor) {
+          sessionStorage.removeItem('pendingScrollAnchor')
+          const targetEl = document.getElementById(pendingAnchor)
+          if (targetEl) {
+            setTimeout(() => {
+              const offset = 80
+              const bodyRect = document.body.getBoundingClientRect().top
+              const elementRect = targetEl.getBoundingClientRect().top
+              const elementPosition = elementRect - bodyRect
+              const offsetPosition = elementPosition - offset
+              window.scrollTo({ top: offsetPosition, behavior: 'smooth' })
+            }, 100)
+          }
+        }
+      }
+
+      // 2. Clean up any #hash in URL if page was loaded with hash
+      if (typeof window !== 'undefined' && window.location.hash) {
+        const anchorId = window.location.hash.replace('#', '')
+        const targetEl = document.getElementById(anchorId)
+        if (targetEl) {
+          const offset = 80
+          const bodyRect = document.body.getBoundingClientRect().top
+          const elementRect = targetEl.getBoundingClientRect().top
+          const elementPosition = elementRect - bodyRect
+          const offsetPosition = elementPosition - offset
+          window.scrollTo({ top: offsetPosition, behavior: 'smooth' })
+        }
+        window.history.replaceState(null, '', window.location.pathname + window.location.search)
+      }
+    }
+
+    checkPendingScroll()
+    window.addEventListener('hashchange', checkPendingScroll)
+
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('hashchange', checkPendingScroll)
+    }
   }, [])
 
   return (
@@ -215,6 +303,7 @@ export default function NavBar({ locale, settings, isEditMode, links: propLinks,
               href={link.href}
               target={link.target}
               rel={link.rel}
+              onClick={(e) => handleNavClick(link.href, link.target, e)}
               style={{
                 color: 'var(--nav-link)',
                 textDecoration: 'none',
@@ -334,7 +423,10 @@ export default function NavBar({ locale, settings, isEditMode, links: propLinks,
               href={link.href}
               target={link.target}
               rel={link.rel}
-              onClick={() => setMenuOpen(false)}
+              onClick={(e) => {
+                setMenuOpen(false)
+                handleNavClick(link.href, link.target, e)
+              }}
               style={{
                 color: useLightNav ? 'var(--text-primary)' : '#ffffff',
                 textDecoration: 'none',

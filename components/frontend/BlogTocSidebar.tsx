@@ -111,20 +111,34 @@ export default function BlogTocSidebar({ toc, titleLabel = 'Indice' }: BlogTocSi
                 lineHeight: 1.4,
               }}
             >
-              <a
-                href={`#${item.id}`}
+              <button
+                type="button"
                 onClick={(e) => handleClick(item.id, e)}
                 style={{
+                  background: 'none',
+                  border: 'none',
+                  padding: 0,
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  fontFamily: 'inherit',
+                  fontSize: 'inherit',
                   textDecoration: 'none',
                   color: isActive ? 'var(--accent-1, #22d3ee)' : 'var(--text-muted, #64748b)',
                   fontWeight: isActive ? 700 : 400,
                   transition: 'color 0.2s',
-                  display: 'inline-block',
+                  display: 'inline-flex',
+                  alignItems: 'center',
                 }}
               >
-                {isActive && <span style={{ marginRight: '0.4rem', color: 'var(--accent-1, #22d3ee)' }}>✦</span>}
-                {item.text}
-              </a>
+                <span style={{
+                  marginRight: isActive ? '0.4rem' : '0',
+                  color: 'var(--accent-1, #22d3ee)',
+                  display: isActive ? 'inline-block' : 'none',
+                }}>
+                  ✦
+                </span>
+                <span>{item.text}</span>
+              </button>
             </li>
           )
         })}

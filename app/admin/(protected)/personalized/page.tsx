@@ -1,6 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { usePermission } from '@/components/admin/AdminShell'
+
 
 interface PersonalizedSettings {
   id: string
@@ -17,6 +19,8 @@ interface PersonalizedSettings {
   showSupportWidget: boolean
   googleSiteVerification: string
   bingSiteVerification: string
+  faviconUrl: string
+  googleSearchImageUrl: string
   [key: string]: any
 }
 
@@ -41,6 +45,7 @@ const fonts = [
 ]
 
 export default function PersonalizedPage() {
+  const { showPermissionAlert } = usePermission()
   const [activeLocale, setActiveLocale] = useState<'es'>('es')
   const [settings, setSettings] = useState<Partial<PersonalizedSettings>>({})
   const [loading, setLoading] = useState(true)
@@ -65,18 +70,51 @@ export default function PersonalizedPage() {
   const save = async () => {
     setSaving(true)
     try {
-      await fetch('/api/admin/personalized', {
+      const res = await fetch('/api/admin/personalized', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ locale: activeLocale, ...settings }),
       })
-      setSaved(true)
-      setTimeout(() => setSaved(false), 2000)
+      if (res.status === 403) {
+        showPermissionAlert()
+      } else if (!res.ok) {
+        alert('保存失败，请重试')
+      } else {
+        setSaved(true)
+        setTimeout(() => setSaved(false), 2000)
+      }
     } catch (err) {
       console.error(err)
       alert('保存失败，请重试')
     } finally {
       setSaving(false)
+    }
+  }
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, key: string) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    const formData = new FormData()
+    formData.append('file', file)
+
+    try {
+      const res = await fetch('/api/admin/upload', {
+        method: 'POST',
+        body: formData,
+      })
+      if (!res.ok) {
+        throw new Error(await res.text() || '上传接口返回错误')
+      }
+      const data = await res.json()
+      if (data.ok) {
+        setSettings(prev => ({ ...prev, [key]: data.url }))
+      } else {
+        alert(data.error || '上传失败')
+      }
+    } catch (err: any) {
+      console.error(err)
+      alert('上传失败，请检查网络或重试')
     }
   }
 
@@ -205,6 +243,189 @@ export default function PersonalizedPage() {
         <h2 style={{ fontSize: '1rem', fontWeight: 700, color: '#f1f5f9', marginBottom: '1rem' }}>🏷️ 品牌重写 ({activeLocale.toUpperCase()})</h2>
         {field('brandName', '此语言的品牌名称')}
         {field('brandLogoUrl', '此语言的 Logo 图片 URL')}
+      </section>
+
+      {/* Icon & Search overrides */}
+      <section style={{ marginBottom: '2rem', padding: '1.25rem', background: 'rgba(30,41,59,0.5)', borderRadius: '0.75rem', border: '1px solid rgba(148,163,184,0.08)' }}>
+        <h2 style={{ fontSize: '1rem', fontWeight: 700, color: '#f1f5f9', marginBottom: '1rem' }}>🖼️ 图标与搜索展示重写 ({activeLocale.toUpperCase()})</h2>
+        
+        {/* Favicon Url Upload */}
+        <div style={{ marginBottom: '1.5rem' }}>
+          <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 600, color: '#94a3b8', marginBottom: '0.5rem' }}>
+            页签上的小图标 (Favicon)
+          </label>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            {settings.faviconUrl && settings.faviconUrl.trim() !== '' ? (
+              <img 
+                src={settings.faviconUrl} 
+                alt="Favicon Preview" 
+                style={{ 
+                  width: 32, 
+                  height: 32, 
+                  objectFit: 'contain', 
+                  background: 'rgba(15,23,42,0.8)', 
+                  padding: 4, 
+                  borderRadius: 4, 
+                  border: '1px solid rgba(148,163,184,0.2)' 
+                }} 
+              />
+            ) : (
+              <div style={{ 
+                width: 32, 
+                height: 32, 
+                background: 'rgba(15,23,42,0.8)', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center', 
+                borderRadius: 4, 
+                border: '1px solid rgba(148,163,184,0.2)', 
+                color: '#64748b', 
+                fontSize: '0.75rem' 
+              }}>
+                无
+              </div>
+            )}
+            <input
+              type="text"
+              value={settings.faviconUrl ?? ''}
+              onChange={e => setSettings(prev => ({ ...prev, faviconUrl: e.target.value }))}
+              placeholder="留空则使用默认 favicon.ico，或上传新图标"
+              style={{
+                flex: 1,
+                padding: '0.75rem 1rem',
+                background: 'rgba(15,23,42,0.8)',
+                border: '1px solid rgba(148,163,184,0.2)',
+                borderRadius: '0.5rem',
+                color: '#f1f5f9',
+                fontSize: '0.9rem',
+                outline: 'none',
+              }}
+            />
+            {settings.faviconUrl && settings.faviconUrl.trim() !== '' && (
+              <button
+                type="button"
+                onClick={() => setSettings(prev => ({ ...prev, faviconUrl: '' }))}
+                style={{
+                  padding: '0.75rem 1rem',
+                  background: 'rgba(239, 68, 68, 0.1)',
+                  border: '1px solid rgba(239, 68, 68, 0.3)',
+                  borderRadius: '0.5rem',
+                  color: '#ef4444',
+                  fontSize: '0.875rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                🗑️ 清除
+              </button>
+            )}
+            <label style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              padding: '0.75rem 1rem',
+              background: 'rgba(34, 211, 238, 0.1)',
+              border: '1px solid rgba(34, 211, 238, 0.3)',
+              borderRadius: '0.5rem',
+              color: '#22d3ee',
+              fontSize: '0.875rem',
+              fontWeight: 600,
+              cursor: 'pointer',
+              whiteSpace: 'nowrap',
+            }}>
+              <span>📤 上传图标</span>
+              <input type="file" accept="image/*" onChange={e => handleImageUpload(e, 'faviconUrl')} style={{ display: 'none' }} />
+            </label>
+          </div>
+        </div>
+
+        {/* Google Search Listing Image Upload */}
+        <div style={{ marginBottom: '1rem' }}>
+          <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 600, color: '#94a3b8', marginBottom: '0.5rem' }}>
+            谷歌搜索列表右侧缩略图
+          </label>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            {settings.googleSearchImageUrl && settings.googleSearchImageUrl.trim() !== '' ? (
+              <img 
+                src={settings.googleSearchImageUrl} 
+                alt="Google Search Preview" 
+                style={{ 
+                  width: 60, 
+                  height: 60, 
+                  objectFit: 'cover', 
+                  borderRadius: 4, 
+                  border: '1px solid rgba(148,163,184,0.2)' 
+                }} 
+              />
+            ) : (
+              <div style={{ 
+                width: 60, 
+                height: 60, 
+                background: 'rgba(15,23,42,0.8)', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center', 
+                borderRadius: 4, 
+                border: '1px solid rgba(148,163,184,0.2)', 
+                color: '#64748b', 
+                fontSize: '0.75rem' 
+              }}>
+                无
+              </div>
+            )}
+            <input
+              type="text"
+              value={settings.googleSearchImageUrl ?? ''}
+              onChange={e => setSettings(prev => ({ ...prev, googleSearchImageUrl: e.target.value }))}
+              placeholder="留空则不显示，或上传右侧缩略图"
+              style={{
+                flex: 1,
+                padding: '0.75rem 1rem',
+                background: 'rgba(15,23,42,0.8)',
+                border: '1px solid rgba(148,163,184,0.2)',
+                borderRadius: '0.5rem',
+                color: '#f1f5f9',
+                fontSize: '0.9rem',
+                outline: 'none',
+              }}
+            />
+            {settings.googleSearchImageUrl && settings.googleSearchImageUrl.trim() !== '' && (
+              <button
+                type="button"
+                onClick={() => setSettings(prev => ({ ...prev, googleSearchImageUrl: '' }))}
+                style={{
+                  padding: '0.75rem 1rem',
+                  background: 'rgba(239, 68, 68, 0.1)',
+                  border: '1px solid rgba(239, 68, 68, 0.3)',
+                  borderRadius: '0.5rem',
+                  color: '#ef4444',
+                  fontSize: '0.875rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                🗑️ 清除
+              </button>
+            )}
+            <label style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              padding: '0.75rem 1rem',
+              background: 'rgba(34, 211, 238, 0.1)',
+              border: '1px solid rgba(34, 211, 238, 0.3)',
+              borderRadius: '0.5rem',
+              color: '#22d3ee',
+              fontSize: '0.875rem',
+              fontWeight: 600,
+              cursor: 'pointer',
+              whiteSpace: 'nowrap',
+            }}>
+              <span>📤 上传图片</span>
+              <input type="file" accept="image/*" onChange={e => handleImageUpload(e, 'googleSearchImageUrl')} style={{ display: 'none' }} />
+            </label>
+          </div>
+        </div>
       </section>
 
       {/* WhatsApp override */}

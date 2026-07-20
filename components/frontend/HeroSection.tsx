@@ -140,7 +140,7 @@ export default async function HeroSection({ locale, settings, isEditMode }: Hero
           </p>
 
           {/* CTA Buttons */}
-          <div className="animate-fade-in-up delay-300 hero-cta-wrap" style={{ display: 'flex', gap: '1rem', justifyContent: layoutMode === 'left' ? 'flex-start' : 'center', flexWrap: 'wrap', marginBottom: '4rem' }}>
+          <div className="animate-fade-in-up delay-300 hero-cta-wrap" style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '4rem' }}>
             <a {...secondaryProps} className="btn-secondary" style={{ fontSize: '1.0625rem', padding: '1rem 2.25rem' }}>
               <EditableText moduleId="hero" locale={locale} fieldKey="cta_secondary" tag="span" isEditMode={isEditMode} noLink={true}>
                 {c.cta_secondary ?? 'View Plans'}

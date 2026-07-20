@@ -138,6 +138,39 @@ export default function Footer({ locale, settings, isEditMode, footerContent, na
   // Note: Affiliate links are now rendered as a standalone homepage module (AffiliateLinksSection).
 
 
+  const handleNavClick = (href: string, target: string | undefined, e: React.MouseEvent) => {
+    if (target === '_blank') return
+
+    if (href && href.includes('#')) {
+      const hashIndex = href.indexOf('#')
+      const pathPart = href.slice(0, hashIndex)
+      const anchorId = href.slice(hashIndex + 1)
+      const currentPath = window.location.pathname
+      const isSamePage = !pathPart || pathPart === currentPath || 
+        (pathPart === '/' && (currentPath === '/' || currentPath === `/${locale}`)) ||
+        (pathPart === `/${locale}` && (currentPath === '/' || currentPath === `/${locale}`))
+
+      const targetEl = anchorId ? document.getElementById(anchorId) : null
+
+      if (isSamePage && targetEl) {
+        e.preventDefault()
+        const offset = 80
+        const bodyRect = document.body.getBoundingClientRect().top
+        const elementRect = targetEl.getBoundingClientRect().top
+        const elementPosition = elementRect - bodyRect
+        const offsetPosition = elementPosition - offset
+
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        })
+
+        // Clean up URL address bar: remove #anchorId completely
+        window.history.replaceState(null, '', currentPath + window.location.search)
+      }
+    }
+  }
+
   return (
     <footer id="footer" style={{ background: 'var(--bg-footer)', color: 'var(--footer-text)', padding: '3rem 0 1.5rem' }}>
       <div className="container">
@@ -173,7 +206,7 @@ export default function Footer({ locale, settings, isEditMode, footerContent, na
             <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.625rem', padding: 0, margin: 0 }}>
               {footerNavLinks.map((link: any, i) => (
                 <li key={i}>
-                  <a href={link.href} target={link.target} rel={link.rel} style={{ color: 'var(--footer-text)', textDecoration: 'none', fontSize: '0.9rem', transition: 'color 0.2s' }}
+                  <a href={link.href} target={link.target} rel={link.rel} onClick={(e) => handleNavClick(link.href, link.target, e)} style={{ color: 'var(--footer-text)', textDecoration: 'none', fontSize: '0.9rem', transition: 'color 0.2s' }}
                     onMouseEnter={(e: any) => e.target.style.color = 'var(--accent-1)'}
                     onMouseLeave={(e: any) => e.target.style.color = 'var(--footer-text)'}
                   >
