@@ -3570,13 +3570,21 @@ export default function ContentEditorPage() {
                           position: 'relative',
                           aspectRatio: '0.565',
                           borderRadius: '0.375rem',
-                          backgroundImage: `url(${img.url})`,
-                          backgroundSize: 'cover',
-                          backgroundPosition: 'center',
-                          backgroundRepeat: 'no-repeat',
+                          overflow: 'hidden',
+                          backgroundColor: '#0f172a',
                           border: '1px solid rgba(255,255,255,0.1)',
                         }}
                       >
+                        <img
+                          src={img.url}
+                          alt="见证截图"
+                          style={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover',
+                            display: 'block',
+                          }}
+                        />
                         {/* Delete button */}
                         <button
                           onClick={(e) => {
@@ -3585,20 +3593,21 @@ export default function ContentEditorPage() {
                           }}
                           style={{
                             position: 'absolute',
-                            top: 2,
-                            right: 2,
-                            background: 'rgba(239, 68, 68, 0.85)',
+                            top: 4,
+                            right: 4,
+                            background: 'rgba(239, 68, 68, 0.9)',
                             color: 'white',
                             border: 'none',
                             borderRadius: '0.25rem',
-                            width: 16,
-                            height: 16,
+                            width: 20,
+                            height: 20,
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            fontSize: '0.625rem',
+                            fontSize: '0.75rem',
                             cursor: 'pointer',
                             zIndex: 10,
+                            boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
                           }}
                           title="删除图片"
                         >

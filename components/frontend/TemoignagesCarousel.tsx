@@ -1,6 +1,8 @@
 import { db } from '@/lib/db'
 import EditableText from './EditableText'
 import ModuleBgWrapper from './ModuleBgWrapper'
+import { stat } from 'fs/promises'
+import path from 'path'
 
 interface TemoignagesProps {
   locale: string
@@ -17,6 +19,18 @@ export default async function TemoignagesCarousel({ locale, settings, isEditMode
     orderBy: { createdAt: 'desc' }
   })
 
+  // Filter images that actually exist on disk
+  const validUploadedImages = []
+  for (const img of uploadedImages) {
+    try {
+      const filepath = path.join(process.cwd(), 'public', img.url)
+      await stat(filepath)
+      validUploadedImages.push(img)
+    } catch {
+      // File missing on disk, skip
+    }
+  }
+
   // Default fallback screenshots if none uploaded
   const defaultImages = [
     { id: 'd1', url: '/images/reviews/1.webp' },
@@ -27,7 +41,7 @@ export default async function TemoignagesCarousel({ locale, settings, isEditMode
     { id: 'd6', url: '/images/reviews/6.webp' },
   ]
 
-  const images = uploadedImages.length > 0 ? uploadedImages : defaultImages
+  const images = validUploadedImages.length > 0 ? validUploadedImages : defaultImages
 
   // Duplicate images list for infinite loop animation
   const scrollImages = [...images, ...images, ...images]

@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { db } from '@/lib/db'
-import { writeFile, mkdir, unlink } from 'fs/promises'
+import { writeFile, mkdir, unlink, stat } from 'fs/promises'
 import path from 'path'
 
 // GET testimonial screenshot images by locale
@@ -18,7 +18,20 @@ export async function GET(req: Request) {
       where: { locale },
       orderBy: { createdAt: 'desc' }
     })
-    return NextResponse.json(images)
+
+    const validImages = []
+    for (const img of images) {
+      try {
+        const filepath = path.join(process.cwd(), 'public', img.url)
+        await stat(filepath)
+        validImages.push(img)
+      } catch {
+        // Remove stale DB record if file does not exist on disk
+        await db.testimonialImage.delete({ where: { id: img.id } }).catch(() => {})
+      }
+    }
+
+    return NextResponse.json(validImages)
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 })
   }
