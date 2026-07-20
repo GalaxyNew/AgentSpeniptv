@@ -112,11 +112,19 @@ export async function generateMetadata({
   const brandName = settings?.brandName ?? 'Mejors IPTV'
   const fallbackDescription = `${brandName}: suscripción IPTV premium con miles de canales, películas y series en 4K/FHD, compatible con Smart TV, Android, iOS y más.`
 
+  const favicon = settings?.faviconUrl && settings.faviconUrl.trim() !== '' ? settings.faviconUrl : '/favicon.ico'
+  const searchImage = settings?.googleSearchImageUrl || seo?.ogImageUrl || settings?.brandLogoUrl || undefined
+
   return {
     metadataBase: new URL(domain),
     title: seo?.metaTitle ?? brandName,
     description: seo?.metaDescription || fallbackDescription,
     robots: seo?.robots ?? 'index, follow',
+    icons: {
+      icon: favicon,
+      shortcut: favicon,
+      apple: favicon,
+    },
     alternates: {
       canonical: seo?.canonicalUrl || homeUrl,
       languages: {
@@ -136,15 +144,18 @@ export async function generateMetadata({
       locale: 'es_ES',
       title: seo?.ogTitle || seo?.metaTitle || brandName,
       description: seo?.ogDescription || seo?.metaDescription || fallbackDescription,
-      images: seo?.ogImageUrl ? [seo.ogImageUrl] : (settings?.brandLogoUrl ? [settings.brandLogoUrl] : []),
+      images: searchImage ? [searchImage] : [],
       siteName: brandName,
     },
     twitter: {
       card: 'summary_large_image',
       title: seo?.ogTitle || seo?.metaTitle || brandName,
       description: seo?.ogDescription || seo?.metaDescription || fallbackDescription,
-      images: seo?.ogImageUrl ? [seo.ogImageUrl] : (settings?.brandLogoUrl ? [settings.brandLogoUrl] : []),
+      images: searchImage ? [searchImage] : [],
     },
+    other: searchImage ? {
+      thumbnail: searchImage,
+    } : undefined,
   }
 }
 
@@ -401,6 +412,13 @@ export default async function LocaleLayout({ params, children }: LocaleLayoutPro
   return (
     <html lang={locale} data-theme={theme} suppressHydrationWarning>
       <head>
+        {settings?.faviconUrl && settings.faviconUrl.trim() !== '' && (
+          <>
+            <link rel="icon" href={settings.faviconUrl} />
+            <link rel="shortcut icon" href={settings.faviconUrl} />
+            <link rel="apple-touch-icon" href={settings.faviconUrl} />
+          </>
+        )}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href={buildFontHref(font)} rel="stylesheet" />
