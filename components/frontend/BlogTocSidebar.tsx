@@ -265,7 +265,7 @@ export default function BlogTocSidebar({ toc, titleLabel = 'Índice del artícul
         .blog-toc-mobile-btn {
           display: none;
         }
-        @media (max-width: 768px) {
+        @media (max-width: 900px) {
           .blog-toc-sidebar {
             display: none !important;
           }
@@ -274,17 +274,17 @@ export default function BlogTocSidebar({ toc, titleLabel = 'Índice del artícul
             align-items: center;
             justify-content: center;
             position: fixed !important;
-            bottom: 2rem !important;
+            bottom: 6rem !important;
             right: 1.5rem !important;
-            width: 50px !important;
-            height: 50px !important;
+            width: 52px !important;
+            height: 52px !important;
             border-radius: 50% !important;
             background: linear-gradient(135deg, #0ea5e9 0%, #10b981 100%) !important;
             color: #ffffff !important;
-            border: 2px solid rgba(255, 255, 255, 0.2) !important;
+            border: 2px solid rgba(255, 255, 255, 0.25) !important;
             box-shadow: 0 8px 24px rgba(14, 165, 233, 0.45), 0 2px 8px rgba(0, 0, 0, 0.3) !important;
             cursor: pointer !important;
-            z-index: 9998 !important;
+            z-index: 9999 !important;
             pointer-events: auto !important;
             transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease !important;
           }
