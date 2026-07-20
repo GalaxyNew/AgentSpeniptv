@@ -274,10 +274,10 @@ export default function BlogTocSidebar({ toc, titleLabel = 'Índice del artícul
             align-items: center;
             justify-content: center;
             position: fixed !important;
-            bottom: 6rem !important;
-            right: 1.5rem !important;
-            width: 52px !important;
-            height: 52px !important;
+            bottom: 5.75rem !important;
+            right: 2rem !important;
+            width: 50px !important;
+            height: 50px !important;
             border-radius: 50% !important;
             background: linear-gradient(135deg, #0ea5e9 0%, #10b981 100%) !important;
             color: #ffffff !important;
