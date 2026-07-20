@@ -6,8 +6,8 @@ import './globals.css'
 export const revalidate = 60
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://igoriptv2.com'),
-  title: 'IPTV Pro',
+  metadataBase: new URL('https://mejorsiptv.shop'),
+  title: 'Mejors IPTV',
   description: 'Premium IPTV subscription service',
 }
 

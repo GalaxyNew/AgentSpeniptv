@@ -8,6 +8,15 @@ export interface ButtonValue {
   gradient?: string
 }
 
+// Keep in sync with lib/seo.ts: default locale is prefix-free on the public site.
+const DEFAULT_LOCALE = 'es'
+
+function localePath(locale: string, path: string): string {
+  const normalized = path.startsWith('/') ? path : `/${path}`
+  if (locale === DEFAULT_LOCALE) return normalized
+  return normalized === '/' ? `/${locale}` : `/${locale}${normalized}`
+}
+
 export function parseButtonValue(rawStr: string | undefined | null): ButtonValue {
   if (!rawStr) {
     return { text: '', actionType: 'whatsapp', actionTarget: '', whatsappMsg: '' }
@@ -43,7 +52,7 @@ export function getButtonLinkProps(
   locale: string,
   settings: any
 ) {
-  const { actionType, actionTarget, whatsappMsg } = buttonValueObj
+  const { actionType, actionTarget, whatsappMsg, href: storedHref } = buttonValueObj
 
   if (actionType === 'whatsapp') {
     const waNumber = settings?.whatsappNumber ?? ''
@@ -65,14 +74,21 @@ export function getButtonLinkProps(
   }
 
   if (actionType === 'page') {
-    const href = `/${locale}/${actionTarget.trim().replace(/^\//, '')}`
+    // Prefer stored public href when present and already prefix-free/canonical.
+    if (storedHref && storedHref.startsWith('/') && !storedHref.startsWith(`/${locale}/`)) {
+      return { href: storedHref }
+    }
+    const slug = actionTarget.trim().replace(/^\//, '')
     return {
-      href,
-      target: '_blank'
+      href: localePath(locale, `/${slug}`),
     }
   }
 
   if (actionType === 'url') {
+    // If stored href is an internal path, prefer it.
+    if (storedHref && storedHref.startsWith('/')) {
+      return { href: storedHref }
+    }
     let url = actionTarget.trim()
     if (url && !url.startsWith('http://') && !url.startsWith('https://') && !url.startsWith('/')) {
       url = `https://${url}`

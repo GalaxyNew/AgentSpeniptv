@@ -178,10 +178,10 @@ const T = {
   wa_badge:    { es: 'IPTV España Prueba', fr: 'IPTV France Essai', en: 'IPTV Trial', zh: 'IPTV 试用' },
   wa_title:    { es: 'IPTV Prueba de 24 Horas', fr: 'Essai IPTV de 24 Heures', en: '24-Hour IPTV Trial', zh: '24小时 IPTV 试用' },
   wa_body:     {
-    es: 'Si no conoce la lista de IGOR IPTV España antes de comprar, puede contactar con IGOR por WhatsApp para solicitar una IPTV Prueba gratuita. Compre solo después de estar satisfecho con the IPTV Prueba.',
-    fr: "Si vous ne connaissez pas la liste d'IGOR IPTV avant d'acheter, contactez IGOR par WhatsApp pour demander un essai IPTV gratuit. Achetez seulement après avoir été satisfait de l'essai.",
-    en: 'If you are not familiar with the IGOR IPTV list before purchasing, you can contact IGOR via WhatsApp to request a free IPTV trial. Buy only after you are satisfied with the trial.',
-    zh: '如果您在购买前不了解 IGOR IPTV 的频道列表，可以通过 WhatsApp 联系 IGOR 申请免费试用。满意后再购买。',
+    es: 'Si no conoce la lista de Mejors IPTV España antes de comprar, puede contactar con Mejors por WhatsApp para solicitar una IPTV Prueba gratuita. Compre solo después de estar satisfecho con la prueba.',
+    fr: "Si vous ne connaissez pas la liste de Mejors IPTV avant d'acheter, contactez Mejors par WhatsApp pour demander un essai IPTV gratuit. Achetez seulement après avoir été satisfait de l'essai.",
+    en: 'If you are not familiar with the Mejors IPTV list before purchasing, you can contact Mejors via WhatsApp to request a free IPTV trial. Buy only after you are satisfied with the trial.',
+    zh: '如果您在购买前不了解 Mejors IPTV 的频道列表，可以通过 WhatsApp 联系 Mejors 申请免费试用。满意后再购买。',
   },
   wa_btn:      { es: 'WhatsApp →', fr: 'WhatsApp →', en: 'WhatsApp →', zh: 'WhatsApp →' },
 }

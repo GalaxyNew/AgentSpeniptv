@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: BlogPageProps): Promise<Metad
     notFound()
   }
   const settings = await getMergedSettings(locale)
-  const brandName = settings?.brandName || 'IGOR IPTV'
+  const brandName = settings?.brandName || 'Mejors IPTV'
   const siteDomain = resolveSiteDomain(settings?.siteDomain)
   const logoUrl = settings?.brandLogoUrl || `${siteDomain}/favicon.png`
 
@@ -112,7 +112,7 @@ interface BlogSchemaPost {
 }
 
 function BlogSchema({ locale, settings, domain, posts }: { locale: string; settings: Record<string, string> | null; domain: string; posts: BlogSchemaPost[] }) {
-  const brandName  = settings?.brandName  || 'IGOR IPTV'
+  const brandName  = settings?.brandName  || 'Mejors IPTV'
   const logoUrl    = settings?.brandLogoUrl || `${domain}/favicon.png`
 
   const names: Record<string, string> = {

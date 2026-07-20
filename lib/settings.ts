@@ -8,7 +8,7 @@ export function resolveSiteDomain(settingsDomain: string | null | undefined, hos
     const protocol = host.includes('localhost') || host.includes('127.0.0.1') ? 'http' : 'https'
     return `${protocol}://${host}`
   }
-  return 'https://igoriptv2.com'
+  return 'https://mejorsiptv.shop'
 }
 
 export async function getMergedSettings(locale: string) {

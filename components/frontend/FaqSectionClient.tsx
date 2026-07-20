@@ -44,7 +44,7 @@ export default function FaqSectionClient({ locale, isEditMode, c, faqs, btnProps
             </h2>
             <p>
               <EditableText moduleId="faq" locale={locale} fieldKey="subtitle" tag="span" isEditMode={isEditMode}>
-                {c.subtitle ?? "Nous restons à votre disposition pour toute demande d'information, par WhatsApp en priorité ou par e-mail."}
+                {c.subtitle ?? "Estamos a tu disposición para cualquier consulta, prioritariamente por WhatsApp o por correo electrónico."}
               </EditableText>
             </p>
             <a
@@ -52,7 +52,7 @@ export default function FaqSectionClient({ locale, isEditMode, c, faqs, btnProps
               className="faq-contact-btn"
             >
               <EditableText moduleId="faq" locale={locale} fieldKey="btn_text" tag="span" isEditMode={isEditMode} noLink={true}>
-                {c.btn_text ?? 'Contactez-nous'}
+                {c.btn_text ?? 'Contáctanos'}
               </EditableText>
               <span style={{ fontSize: '1rem', lineHeight: 1 }}>➔</span>
             </a>

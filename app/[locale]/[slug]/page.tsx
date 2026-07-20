@@ -34,7 +34,7 @@ export async function generateMetadata({ params }: SubpageProps): Promise<Metada
   if (!page || !page.isVisible) return {}
 
   const settings = await getMergedSettings(locale)
-  const brandName = settings?.brandName || 'IPTV Pro'
+  const brandName = settings?.brandName || 'Mejors IPTV'
   
   const domain = resolveSiteDomain(settings?.siteDomain)
   const defaultCanonical = publicUrl(domain, locale, `/${slug}`)
@@ -86,7 +86,7 @@ export default async function Subpage({ params }: SubpageProps) {
   }
 
   const settings = await getMergedSettings(locale)
-  const brandName = settings?.brandName || 'IPTV Pro'
+  const brandName = settings?.brandName || 'Mejors IPTV'
 
   const domain = resolveSiteDomain(settings?.siteDomain)
 

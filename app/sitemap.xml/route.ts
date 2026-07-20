@@ -27,7 +27,7 @@ export async function GET() {
 
   const rawDomain = settings?.siteDomain && settings.siteDomain !== 'https://example.com'
     ? settings.siteDomain
-    : 'https://igoriptv2.com'
+    : 'https://mejorsiptv.shop'
   const domain = rawDomain.replace(/\/$/, '')
 
   const fmt = (d: Date) => d.toISOString().split('T')[0]

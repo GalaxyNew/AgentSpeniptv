@@ -129,7 +129,7 @@ export async function generateMetadata({ params }: SubpageProps): Promise<Metada
   if (post.status === 'draft' || isScheduledNotYetPublished) return {}
 
   const settings = await getMergedSettings(locale)
-  const brandName = settings?.brandName || 'IPTV Pro'
+  const brandName = settings?.brandName || 'Mejors IPTV'
   const siteDomain = resolveSiteDomain(settings?.siteDomain)
   const defaultCanonical = publicUrl(siteDomain, locale, `/blog/${slug}`)
   const canonical = post.canonicalUrl || defaultCanonical
@@ -201,7 +201,7 @@ export default async function BlogPostDetailPage({ params }: SubpageProps) {
   }
 
   const settings = await getMergedSettings(locale)
-  const brandName = settings?.brandName || 'IPTV Pro'
+  const brandName = settings?.brandName || 'Mejors IPTV'
   const domain = resolveSiteDomain(settings?.siteDomain)
 
   const postUrl = publicUrl(domain, locale, `/blog/${slug}`)

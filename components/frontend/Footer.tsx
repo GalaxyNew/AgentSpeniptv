@@ -42,9 +42,9 @@ const content = {
     affiliateTitle: 'Nuestros Socios',
     legalTitle: 'Legal',
     legalLinks: [
-      { label: 'política de privacidad', href: '/es/privacy-policy' },
-      { label: 'Condiciones de servicio', href: '/es/terms-of-service' },
-      { label: 'Política de reembolso', href: '/es/refund-policy' },
+      { label: 'política de privacidad', href: '/privacy-policy' },
+      { label: 'Condiciones de servicio', href: '/terms-of-service' },
+      { label: 'Política de reembolso', href: '/refund-policy' },
     ],
   },
   en: {
@@ -87,7 +87,7 @@ export default function Footer({ locale, settings, isEditMode, footerContent, na
   const loc = locale as keyof typeof content
   const d = content[loc] ?? content.en
   const year = new Date().getFullYear()
-  const brand = settings?.brandName ?? 'IPTV Pro'
+  const brand = settings?.brandName ?? 'Mejors IPTV'
   
   let waNumber = settings?.whatsappNumber ?? ''
   
@@ -191,9 +191,10 @@ export default function Footer({ locale, settings, isEditMode, footerContent, na
             </div>
             <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.625rem', padding: 0, margin: 0 }}>
               {legalLinks.map((link: any, i) => {
-                const href = (link.href || '').startsWith('/es/') && !footerContent
-                  ? link.href.substring(3)
-                  : link.href
+                let href = link.href || '#'
+                // public default locale is prefix-free
+                if (href.startsWith('/es/')) href = href.slice(3)
+                if (href.startsWith('/fr/')) href = href
                 return (
                   <li key={i}>
                     <a href={href} target={link.target} rel={link.rel} style={{ color: 'var(--footer-text)', textDecoration: 'none', fontSize: '0.9rem', transition: 'color 0.2s' }}

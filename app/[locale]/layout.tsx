@@ -109,7 +109,7 @@ export async function generateMetadata({
 
   const domain = resolveSiteDomain(settings?.siteDomain)
   const homeUrl = publicUrl(domain, locale)
-  const brandName = settings?.brandName ?? 'IPTV Pro'
+  const brandName = settings?.brandName ?? 'Mejors IPTV'
   const fallbackDescription = `${brandName}: suscripción IPTV premium con miles de canales, películas y series en 4K/FHD, compatible con Smart TV, Android, iOS y más.`
 
   return {
@@ -253,7 +253,7 @@ export default async function LocaleLayout({ params, children }: LocaleLayoutPro
       }
     ]
 
-    const brandName = settings?.brandName || 'IPTV Pro'
+    const brandName = settings?.brandName || 'Mejors IPTV'
 
     for (const policy of policies) {
       await db.subpage.upsert({
@@ -305,12 +305,12 @@ export default async function LocaleLayout({ params, children }: LocaleLayoutPro
   const productSchema = schema ? {
     '@context': 'https://schema.org',
     '@type': 'Product',
-    name: schema.orgName || settings?.brandName || 'IPTV Pro',
+    name: schema.orgName || settings?.brandName || 'Mejors IPTV',
     image: schema.orgLogoUrl || settings?.brandLogoUrl || undefined,
-    description: settings?.brandSlogan_fr || 'Premium IPTV Subscription service',
+    description: (settings as any)?.[`brandSlogan_${locale}`] || settings?.brandSlogan_es || settings?.brandSlogan_fr || 'Suscripción IPTV premium con prueba gratis',
     brand: {
       '@type': 'Brand',
-      name: settings?.brandName || 'IPTV Pro'
+      name: settings?.brandName || 'Mejors IPTV'
     },
     aggregateRating: {
       '@type': 'AggregateRating',
@@ -332,7 +332,7 @@ export default async function LocaleLayout({ params, children }: LocaleLayoutPro
   const websiteSchema = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: settings?.brandName || 'IPTV Pro',
+    name: settings?.brandName || 'Mejors IPTV',
     url: publicUrl(domain, locale),
     inLanguage: 'es-ES',
   }

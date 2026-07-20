@@ -121,7 +121,7 @@ export default function NavBar({ locale, settings, isEditMode, links: propLinks,
   const waMsg = settings?.[`whatsappMsg_${locale}`] ?? ''
   const waUrl = `https://wa.me/${waNumber.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(waMsg)}`
 
-  const brandName = settings?.brandName || 'IPTV Pro'
+  const brandName = settings?.brandName || 'Mejors IPTV'
 
   // CTA Button
   const rawCta = headerContent?.cta_text
