@@ -791,6 +791,49 @@ async function main() {
     })
     console.log('✅ Default HowItWorks stadium background seeded')
   }
+  // Seed default Affiliate Links
+  const DEFAULT_AFFILIATE_LINKS: Record<string, { title: string; subtitle: string; url: string }[]> = {
+    es: [
+      { title: 'ExpressVPN Premium', subtitle: 'Servicio VPN ultrarrápido y seguro para streaming IPTV sin interrupciones', url: 'https://expressvpn.com' },
+      { title: 'IPTV Smarters Pro', subtitle: 'La mejor aplicación reproductora para Smart TV, Android y Firestick', url: 'https://www.iptvsmarters.com' },
+      { title: 'TiviMate IPTV Player', subtitle: 'Reproductor IPTV profesional de alto rendimiento para Android TV', url: 'https://tivimate.com' },
+    ],
+    fr: [
+      { title: 'ExpressVPN Premium', subtitle: 'Service VPN ultra-rapide et sécurisé pour le streaming IPTV sans interruption', url: 'https://expressvpn.com' },
+      { title: 'IPTV Smarters Pro', subtitle: 'La meilleure application de lecture pour Smart TV, Android et Firestick', url: 'https://www.iptvsmarters.com' },
+      { title: 'TiviMate IPTV Player', subtitle: 'Lecteur IPTV professionnel haute performance pour Android TV', url: 'https://tivimate.com' },
+    ],
+    en: [
+      { title: 'ExpressVPN Premium', subtitle: 'Ultra-fast and secure VPN service for buffer-free IPTV streaming', url: 'https://expressvpn.com' },
+      { title: 'IPTV Smarters Pro', subtitle: 'The best player application for Smart TV, Android, and Firestick', url: 'https://www.iptvsmarters.com' },
+      { title: 'TiviMate IPTV Player', subtitle: 'High-performance professional IPTV player for Android TV', url: 'https://tivimate.com' },
+    ],
+    zh: [
+      { title: 'ExpressVPN 高速节点', subtitle: '专为 IPTV 无卡顿流媒体优化的全平台加密 VPN', url: 'https://expressvpn.com' },
+      { title: 'IPTV Smarters Pro', subtitle: '全平台多终端兼容的专业级 IPTV 播放器', url: 'https://www.iptvsmarters.com' },
+      { title: 'TiviMate IPTV Player', subtitle: '电视大屏端极致体验的高清 IPTV 播放工具', url: 'https://tivimate.com' },
+    ],
+  }
+
+  for (const locale of locales) {
+    const linkCount = await prisma.affiliateLink.count({ where: { locale } })
+    if (linkCount === 0) {
+      const defaults = DEFAULT_AFFILIATE_LINKS[locale] || DEFAULT_AFFILIATE_LINKS.es
+      for (let i = 0; i < defaults.length; i++) {
+        await prisma.affiliateLink.create({
+          data: {
+            title: defaults[i].title,
+            subtitle: defaults[i].subtitle,
+            url: defaults[i].url,
+            locale,
+            sortOrder: i + 1,
+            isActive: true,
+          }
+        })
+      }
+    }
+  }
+  console.log('✅ Default Affiliate Links seeded')
 
   console.log('\n🎉 Database seeded successfully!')
   console.log('   Admin login: admin / admin123')
