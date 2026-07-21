@@ -176,7 +176,7 @@ No. La presencia de una oferta en un marketplace como AliExpress no acredita que
 
 Un archivo M3U es un formato de lista de reproducción que contiene direcciones URL de streams de vídeo o audio. Es el formato más utilizado para cargar listas de canales en reproductores IPTV como VLC, Kodi o apps dedicadas. El formato en sí es neutral: puede contener tanto canales legales como ilegales; todo depende de las fuentes que incluya.
 
-> **¿Buscas una alternativa sencilla y verificable?** [Consulta opciones oficiales para ver TDT y deporte](/alternativas-legales-tdt-deporte/) y compara disponibilidad, precio y condiciones antes de contratar.
+> **¿Buscas una alternativa sencilla y verificable?** [Consulta opciones oficiales para ver TDT y deporte](/blog) y compara disponibilidad, precio y condiciones antes de contratar.
 
 ---
 
