@@ -71,6 +71,40 @@ interface TocItem {
   level: number
 }
 
+function toPlainText(value: string): string {
+  return value
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&amp;/gi, '&')
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/gi, "'")
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
+function extractFaqSchema(html: string) {
+  const mainEntity = Array.from(
+    html.matchAll(/<details\b[^>]*data-faq-item=["']true["'][^>]*>[\s\S]*?<summary[^>]*>([\s\S]*?)<\/summary>[\s\S]*?<p[^>]*>([\s\S]*?)<\/p>[\s\S]*?<\/details>/gi)
+  ).map((match) => ({
+    '@type': 'Question',
+    name: toPlainText(match[1]),
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: toPlainText(match[2]),
+    },
+  }))
+
+  if (mainEntity.length === 0) return null
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity,
+  }
+}
+
 function processAnchorsAndExtractToc(html: string): { processedHtml: string; toc: TocItem[] } {
   const toc: TocItem[] = []
   let headingIndex = 0
@@ -205,6 +239,7 @@ export default async function BlogPostDetailPage({ params }: SubpageProps) {
   const domain = resolveSiteDomain(settings?.siteDomain)
 
   const postUrl = publicUrl(domain, locale, `/blog/${slug}`)
+  const canonicalPostUrl = post.canonicalUrl || postUrl
   const blogIndexUrl = publicUrl(domain, locale, '/blog')
 
   const articleSchema = {
@@ -231,7 +266,7 @@ export default async function BlogPostDetailPage({ params }: SubpageProps) {
     },
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': postUrl
+      '@id': canonicalPostUrl
     }
   }
 
@@ -268,7 +303,7 @@ export default async function BlogPostDetailPage({ params }: SubpageProps) {
   if (post.template?.keywordLinks) {
     try {
       keywordLinksMap = JSON.parse(post.template.keywordLinks)
-    } catch (e) {}
+    } catch {}
   }
   renderedContent = injectKeywordLinks(renderedContent, keywordLinksMap)
 
@@ -276,10 +311,11 @@ export default async function BlogPostDetailPage({ params }: SubpageProps) {
   const enableToc = post.template ? post.template.anchorNavEnabled : true
   const { processedHtml, toc } = processAnchorsAndExtractToc(renderedContent)
   renderedContent = processedHtml
+  const faqSchema = extractFaqSchema(renderedContent)
 
   // 3. Query Recommendation list
-  let recsLimit = post.template?.recommendationsCount || 3
-  let recsType = post.template?.recommendationsType || 'latest'
+  const recsLimit = post.template?.recommendationsCount || 3
+  const recsType = post.template?.recommendationsType || 'latest'
   
   let recommendations = []
   if (recsType === 'category') {
@@ -354,6 +390,12 @@ export default async function BlogPostDetailPage({ params }: SubpageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
+      {faqSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+        />
+      )}
       <div className="blog-page-wrapper">
       <style>{`
         .blog-page-wrapper {
