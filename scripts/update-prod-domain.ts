@@ -4,11 +4,11 @@ async function main() {
   const settings = await db.siteSettings.upsert({
     where: { id: 'main' },
     update: {
-      siteDomain: 'https://igoriptv2.com',
+      siteDomain: 'https://mejorsiptv.shop',
     },
     create: {
       id: 'main',
-      siteDomain: 'https://igoriptv2.com',
+      siteDomain: 'https://mejorsiptv.shop',
       brandName: 'IGOR IPTV',
       defaultLocale: 'fr',
     },

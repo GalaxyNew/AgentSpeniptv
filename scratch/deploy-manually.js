@@ -111,6 +111,9 @@ conn.on('ready', async () => {
     console.log('Generating Prisma client...');
     await executeCommand(conn, `cd ${appDir} && npx prisma generate`);
 
+    console.log('Building Next.js application...');
+    await executeCommand(conn, `cd ${appDir} && npm run build`);
+
     console.log('Running add-marquees.ts...');
     await executeCommand(conn, `cd ${appDir} && npx tsx scripts/add-marquees.ts`);
 
@@ -119,8 +122,8 @@ conn.on('ready', async () => {
 
     console.log('Running update-prod-domain.ts...');
     // We run it directly on root dev.db using sqlite3 to be absolutely safe
-    await executeCommand(conn, `sqlite3 ${appDir}/dev.db "UPDATE SiteSettings SET siteDomain = 'https://igoriptv2.com' WHERE id = 'main';"`);
-    await executeCommand(conn, `sqlite3 ${appDir}/dev.db "UPDATE SchemaConfig SET orgUrl = 'https://igoriptv2.com' WHERE id = 'main';"`);
+    await executeCommand(conn, `sqlite3 ${appDir}/dev.db "UPDATE SiteSettings SET siteDomain = 'https://mejorsiptv.shop' WHERE id = 'main';"`);
+    await executeCommand(conn, `sqlite3 ${appDir}/dev.db "UPDATE SchemaConfig SET orgUrl = 'https://mejorsiptv.shop' WHERE id = 'main';"`);
 
     console.log('Running add-blog-post-smarters.ts...');
     // Let's run the typescript seed script for our new blog post

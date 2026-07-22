@@ -79,6 +79,7 @@ conn.on('ready', async () => {
     console.log('--- Step 3: Rebuilding Next.js & Running Database Scripts ---');
     await executeCommand(conn, `cd ${appDir} && npx prisma db push`);
     await executeCommand(conn, `cd ${appDir} && npx prisma generate`);
+    await executeCommand(conn, `cd ${appDir} && npm run build`);
     await executeCommand(conn, `cd ${appDir} && npx tsx scripts/add-marquees.ts`);
     await executeCommand(conn, `cd ${appDir} && npx tsx scripts/seed-blog-subpage.ts`);
     await executeCommand(conn, `cd ${appDir} && npx tsx scripts/update-prod-domain.ts`);
