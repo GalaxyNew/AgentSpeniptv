@@ -63,8 +63,8 @@ conn.on('ready', async () => {
   try {
     // 1. Package remote data
     console.log('--- Step 1: Packaging remote database and uploads ---');
-    // Zip dev.db, prisma/dev.db and public/uploads if they exist
-    await executeCommand(conn, `cd ${remoteAppDir} && zip -r ${remoteZipPath} dev.db prisma/dev.db public/uploads`);
+    // Zip dev.db, prisma/dev.db, public/uploads and .env if they exist
+    await executeCommand(conn, `cd ${remoteAppDir} && zip -r ${remoteZipPath} dev.db prisma/dev.db public/uploads .env`);
 
     // 2. Download zip file
     console.log('--- Step 2: Downloading package ---');
