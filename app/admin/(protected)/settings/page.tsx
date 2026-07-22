@@ -222,6 +222,7 @@ export default function SettingsPage() {
         </div>
 
         {field('footerCopyright', '页脚版权文字（{year} 和 {brand} 会自动替换）', 'text', '© {year} {brand}. All rights reserved.')}
+        {field('apiPublishToken', 'API文章发布与配图上传密钥 (API_PUBLISH_TOKEN)', 'text', '例如：your-secure-token')}
       </section>
 
       {/* Global Contact Details */}

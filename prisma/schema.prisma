@@ -204,6 +204,7 @@ model SiteSettings {
   bingSiteVerification   String @default("")
   faviconUrl             String @default("")
   googleSearchImageUrl   String @default("")
+  apiPublishToken        String @default("")
 }
 
 // ── Hero Background Images ───────────────────────────────────────────────────
