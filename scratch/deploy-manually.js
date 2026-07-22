@@ -14,7 +14,7 @@ const config = {
   host: '65.20.101.78',
   port: 22,
   username: 'root',
-  password: 'E3m {StZ-UbYoxdQV'
+  password: 'E3m{StZ-UbYoxdQV'
 };
 
 const localZipPath = path.resolve(__dirname, '..', 'deploy.zip');
