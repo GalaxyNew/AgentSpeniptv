@@ -4,13 +4,13 @@ const path = require('path');
 const { exec } = require('child_process');
 
 const config = {
-  host: '65.20.105.127',
+  host: '65.20.101.78',
   port: 22,
   username: 'root',
-  password: 'i3C?bfh%xE(2cD5r'
+  password: 'E3m{StZ-UbYoxdQV'
 };
 
-const remoteAppDir = '/var/www/igortv';
+const remoteAppDir = '/var/www/igortv2';
 const remoteZipPath = '/tmp/server-data.zip';
 const localZipPath = path.join(__dirname, '..', 'server-data.zip');
 

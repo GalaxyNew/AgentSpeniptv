@@ -11,15 +11,15 @@ process.on('unhandledRejection', (reason, promise) => {
 
 
 const config = {
-  host: '65.20.105.127',
+  host: '65.20.101.78',
   port: 22,
   username: 'root',
-  password: 'i3C?bfh%xE(2cD5r'
+  password: 'E3m {StZ-UbYoxdQV'
 };
 
 const localZipPath = path.resolve(__dirname, '..', 'deploy.zip');
 const remoteZipPath = '/tmp/deploy.zip';
-const appDir = '/var/www/igortv';
+const appDir = '/var/www/igortv2';
 
 const conn = new Client();
 
@@ -128,7 +128,7 @@ conn.on('ready', async () => {
 
     // 4. Restart PM2
     console.log('Restarting PM2 process...');
-    await executeCommand(conn, 'pm2 restart igortv');
+    await executeCommand(conn, 'pm2 restart igortv2');
 
     console.log('\n=========================================');
     console.log('DEPLOYMENT COMPLETE AND VERIFIED!');

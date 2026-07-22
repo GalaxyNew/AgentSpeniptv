@@ -1,15 +1,15 @@
 const { Client } = require('ssh2');
 const config = {
-  host: '65.20.105.127',
+  host: '65.20.101.78',
   port: 22,
   username: 'root',
-  password: 'i3C?bfh%xE(2cD5r'
+  password: 'E3m{StZ-UbYoxdQV'
 };
 
 const conn = new Client();
 conn.on('ready', () => {
   console.log('SSH connection established to check remote status.');
-  conn.exec('df -h', (err, stream) => {
+  conn.exec('pm2 show igortv2', (err, stream) => {
     if (err) throw err;
     stream.on('close', (code, signal) => {
       conn.end();
