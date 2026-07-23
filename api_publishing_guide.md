@@ -89,12 +89,13 @@ Content-Type: application/json
 | `content` | String | **是** | - | 文章 HTML 格式正文（支持段落、标题 `<h2>`/`<h3>`、图片 `<img src="...">` 等） |
 | `category` | String | **是** | `guias` | 发布的板块分类，合法值：<br>• `guias` (指南与教程)<br>• `dispositivos` (设备与硬件)<br>• `contenido` (内容与频道)<br>• `comparativas` (对比与评测) |
 | `status` | String | 否 | `published` | 发布状态，合法值：<br>• `published` (立即发布公开)<br>• `draft` (保存为草稿)<br>• `scheduled` (定时排期发布) |
-| `publishAt` | String | 定时发布时必填 | 当年前时间 | ISO 8601 格式时间戳（如 `2026-08-01T10:00:00.000Z`）。若 `status="scheduled"`，文章将在到达该时间后前台自动上线 |
+| `publishAt` | String | 否 | 第一次发布时间 | 文章发布时间（ISO 8601 格式，如 `2026-07-23T12:00:00.000Z`）。在已有文章编辑时保持首次发布时间，亦可手动传值修改 |
+| `updatedAt` | String | 否 | 打开/修改时刻 | 文章最后修改时间（ISO 8601 格式，如 `2026-07-23T14:30:00.000Z`）。未传送时默认使用请求时的时间 |
+| `excerpt` | String | 否 | 正文自动提取 | 文章摘要说明 (Excerpt)，用于博客列表页与小卡片展示。留空则自动提取正文前 150 字 |
 | `slug` | String | 否 | 标题自动转化 | 自定义 URL Slug（如 `guia-completa-iptv-2026`）。不填时自动根据标题转为小写横杠连接 |
 | `locale` | String | 否 | `es` | 语言标识（如 `es`, `fr`, `en`, `zh`） |
 | `templateName` | String | 否 | - | 绑定的模版名称（如 `"Standard SEO T"`）。绑定后自动应用模版页头/页脚、关键词自动内链及推荐规则 |
 | `templateId` | String | 否 | - | 绑定的模版 ID（与 `templateName` 二选一） |
-| `excerpt` | String | 否 | 正文自动提取 | 文章摘要说明 |
 | `metaTitle` | String | 否 | 取 `title` 替换 | SEO 搜索标题（显示在浏览器标签页及搜索引擎搜索结果页） |
 | `metaDescription` | String | 否 | 取 `excerpt` | SEO 搜索描述（建议 120-160 个字符） |
 | `keywords` | String / Array | 否 | `""` | SEO 关键词，支持数组 `["IPTV", "España"]` 或逗号分隔字符串 `"IPTV, España"` |

@@ -49,6 +49,7 @@ export async function POST(req: Request) {
       category = 'guias',
       status = 'published',
       publishAt,
+      updatedAt,
       metaTitle,
       metaDescription,
       canonicalUrl = '',
@@ -111,7 +112,7 @@ export async function POST(req: Request) {
       }, { status: 400 })
     }
 
-    // 6. Handle scheduled publish date
+    // 6. Handle scheduled publish date and update date
     let parsedPublishAt = new Date()
     if (finalStatus === 'scheduled') {
       if (!publishAt) {
@@ -125,6 +126,14 @@ export async function POST(req: Request) {
       const customDate = new Date(publishAt)
       if (!isNaN(customDate.getTime())) {
         parsedPublishAt = customDate
+      }
+    }
+
+    let parsedUpdatedAt = new Date()
+    if (updatedAt) {
+      const customUpdateDate = new Date(updatedAt)
+      if (!isNaN(customUpdateDate.getTime())) {
+        parsedUpdatedAt = customUpdateDate
       }
     }
 
@@ -184,6 +193,7 @@ export async function POST(req: Request) {
         category: finalCategory,
         status: finalStatus,
         publishAt: parsedPublishAt,
+        updatedAt: parsedUpdatedAt,
         metaTitle: finalMetaTitle,
         metaDescription: finalMetaDescription,
         canonicalUrl,
