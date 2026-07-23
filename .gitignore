@@ -43,3 +43,11 @@ next-env.d.ts
 /app/generated/prisma
 *.bak*
 
+# databases
+dev.db*
+prisma/dev.db*
+temp-server-data
+deploy.zip
+server-data.zip
+scratch/
+
