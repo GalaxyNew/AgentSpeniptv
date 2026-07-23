@@ -64,6 +64,40 @@ function injectKeywordLinks(html: string, keywordMap: Record<string, string>): s
   return tokens.join('')
 }
 
+function toPlainText(value: string): string {
+  return value
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&amp;/gi, '&')
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/gi, "'")
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
+function extractFaqSchema(html: string) {
+  const mainEntity = Array.from(
+    html.matchAll(/<details\b[^>]*data-faq-item=["']true["'][^>]*>[\s\S]*?<summary[^>]*>([\s\S]*?)<\/summary>[\s\S]*?<p[^>]*>([\s\S]*?)<\/p>[\s\S]*?<\/details>/gi)
+  ).map((match) => ({
+    '@type': 'Question',
+    name: toPlainText(match[1]),
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: toPlainText(match[2]),
+    },
+  }))
+
+  if (mainEntity.length === 0) return null
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity,
+  }
+}
+
 // Extract headings for Table of Contents and inject dynamic element IDs
 interface TocItem {
   id: string
@@ -276,6 +310,7 @@ export default async function BlogPostDetailPage({ params }: SubpageProps) {
   const enableToc = post.template ? post.template.anchorNavEnabled : true
   const { processedHtml, toc } = processAnchorsAndExtractToc(renderedContent)
   renderedContent = processedHtml
+  const faqSchema = extractFaqSchema(renderedContent)
 
   // 3. Query Recommendation list
   let recsLimit = post.template?.recommendationsCount || 3
@@ -354,6 +389,12 @@ export default async function BlogPostDetailPage({ params }: SubpageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
+      {faqSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+        />
+      )}
       <div className="blog-page-wrapper">
       <style>{`
         .blog-page-wrapper {
